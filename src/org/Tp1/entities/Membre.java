@@ -1,13 +1,3 @@
-/**
- *  Unité d'enseignement: GENIE LOGICIEL AVANCE 
- *  Author: MEDOU Daniel Magloire
- *  Ecole: IFI
- *  Niveau: Master 1
- *  Option: Systèmes Intelligents et Multimédia
- *  Date: 17 Août 2017
- *  Description: TP1
- */
-
 package org.Tp1.entities;
 
 import java.util.ArrayList;

@@ -1,13 +1,3 @@
-/**
- *  Unité d'enseignement: GENIE LOGICIEL AVANCE 
- *  Author: MEDOU Daniel Magloire
- *  Ecole: IFI
- *  Niveau: Master 1
- *  Option: Systèmes Intelligents et Multimédia
- *  Date: 17 Août 2017
- *  Description: TP1
- */
-
 package org.Tp1.BD;
 
 import java.io.File;
@@ -28,16 +18,11 @@ public class DataBaseConnexion {
 		Connection c = null;
 		Statement stmt = null;
 		ResultSet rs=null;
-		final String NOM_BASE_DE_DONNEES ="gestiontache.db";
-
-		private final String STATUS_NOUVEAU="nouveau";
-		private final String STATUS_EN_PROGRES="en-progres";
-		private final String STATUS_TERMINE="termine";
 
 		//Constructeur de la classe permettant d'initialiser, d'instancier et de creer une connexion a la base de donnees 
 		public DataBaseConnexion() {		
 			boolean fichierExiste=false;
-			File f1 = new File(NOM_BASE_DE_DONNEES); 
+			File f1 = new File("GESTACHE.DB"); 
 			//Test de l'existence de la base
 			if(f1.exists()){
 			   fichierExiste=true;
@@ -45,7 +30,7 @@ public class DataBaseConnexion {
 			
 			try {
 				Class.forName("org.sqlite.JDBC");
-				c = DriverManager.getConnection("jdbc:sqlite:" + NOM_BASE_DE_DONNEES);
+				c = DriverManager.getConnection("jdbc:sqlite:" + "GESTACHE.DB");
 				c.setAutoCommit(true);
 
 				stmt = c.createStatement();
@@ -53,6 +38,7 @@ public class DataBaseConnexion {
 				if(!fichierExiste){
 					creerTablesDansLaBaseDeDonnees();
 				}
+				//System.out.println("\nBase de donnees cree avec success\n");
 				
 			} catch (Exception e) {
 				System.err.println(e.getClass().getName() + ": " + e.getMessage());
