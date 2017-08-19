@@ -1,3 +1,12 @@
+/**
+ *  Author: MEDOU Daniel Magloire
+ *  Unité d'enseignement: GENIE LOGICIEL AVANCE
+ *  Ecole: IFI
+ *  Niveau: Master 1
+ *  Option: Systèmes Intelligents et Multimédia (SIM)
+ *  Description: TP1, Conception et Réalisation d'une Application de Gestion de Tâches: "GESTACHE"
+ */
+
 package org.Tp1.entities;
 
 import java.util.ArrayList;

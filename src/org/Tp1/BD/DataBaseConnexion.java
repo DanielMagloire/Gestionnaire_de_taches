@@ -1,3 +1,12 @@
+/**
+ *  Author: MEDOU Daniel Magloire
+ *  Unité d'enseignement: GENIE LOGICIEL AVANCE
+ *  Ecole: IFI
+ *  Niveau: Master 1
+ *  Option: Systèmes Intelligents et Multimédia (SIM)
+ *  Description: TP1, Conception et Réalisation d'une Application de Gestion de Tâches: "GESTACHE"
+ */
+
 package org.Tp1.BD;
 
 import java.io.File;
@@ -137,7 +146,7 @@ public class DataBaseConnexion {
 			}
 			rs = stmt.executeQuery("SELECT T.ID AS tacheID, T.NOM AS tacheNOM, T.DESCRIPTION AS tacheDESCRIPTION,"
 					+ "T.STATUS AS tacheSTATUS, M.ID AS membreID, M.NOM AS membreNOM  FROM TACHE AS T "
-					+ "INNER JOIN MEMBRE AS M  ON T.ID_MEMBRE=M.ID WHERE T.STATUS = '"+stringStatus+"';");
+					+ "LEFT JOIN MEMBRE AS M  ON T.ID_MEMBRE=M.ID WHERE T.STATUS = '"+stringStatus+"';");
 
 			while (rs.next()) {
 				//Creation objet tache
@@ -226,21 +235,24 @@ public class DataBaseConnexion {
 			String sql = "DELETE FROM TACHE WHERE ID="+ idTache + ";";
 			try {
 				stmt.executeUpdate(sql);
+				System.out.println("\nTache supprimee\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			System.out.println("\nTache supprimee\n");
+
 		}
 
 		public void supprimerMembre(int idMembre) {
 			String sql = "DELETE FROM MEMBRE WHERE ID="+ idMembre + ";";
 			try {
 				stmt.executeUpdate(sql);
-				sql="UPDATE TACHE SET ID_MEMBRE = NULL WHERE ID_MEMBRE=" + idMembre +";";
+				sql="UPDATE TACHE SET ID_MEMBRE = NULL WHERE ID_MEMBRE=0;";
+				stmt.executeUpdate(sql);
+				System.out.println("\nMembre supprime\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			System.out.println("\nMembre supprime\n");
+
 		}
 
 		// Methode permettant de fermer et liberer les ressources
