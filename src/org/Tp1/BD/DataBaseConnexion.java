@@ -24,25 +24,26 @@ import org.Tp1.entities.Tache;
 public class DataBaseConnexion {
 
 	//Variables representant les ressources manipulees
-		Connection c = null;
-		Statement stmt = null;
-		ResultSet rs=null;
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet result=null;
 
 		//Constructeur de la classe permettant d'initialiser, d'instancier et de creer une connexion a la base de donnees 
 		public DataBaseConnexion() {		
 			boolean fichierExiste=false;
-			File f1 = new File("GESTACHE.DB"); 
+			File file = new File("GESTACHE.DB"); 
+			
 			//Test de l'existence de la base
-			if(f1.exists()){
+			if(file.exists()){
 			   fichierExiste=true;
 			}
 			
 			try {
 				Class.forName("org.sqlite.JDBC");
-				c = DriverManager.getConnection("jdbc:sqlite:" + "GESTACHE.DB");
-				c.setAutoCommit(true);
+				connection = DriverManager.getConnection("jdbc:sqlite:" + "GESTACHE.DB");
+				connection.setAutoCommit(true);
 
-				stmt = c.createStatement();
+				statement = connection.createStatement();
 				
 				if(!fichierExiste){
 					creerTablesDansLaBaseDeDonnees();
@@ -68,18 +69,18 @@ public class DataBaseConnexion {
 						"DESCRIPTION TEXT NOT NULL,"+
 						"STATUS TEXT NOT NULL," +
 						"ID_MEMBRE INTEGER NULL)";					
-				stmt.executeUpdate(sql);
+				statement.executeUpdate(sql);
 
 				sql="CREATE TABLE MEMBRE " +
 						"(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," +
 						" NOM TEXT NOT NULL)";					
-				stmt.executeUpdate(sql);
+				statement.executeUpdate(sql);
 
 			} catch ( Exception e ) {
 				System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 				System.exit(0);
 			}
-			System.out.println("Creation des tables TACHE et MEMBRE reussie\n");
+			System.out.println("BRAVO LES TABLES TACHE et MEMBRE CREES AVEC SUCCES\n");
 		}
 
 		//Methode permettant de creer une tache
@@ -94,9 +95,9 @@ public class DataBaseConnexion {
 			}
 
 			try {
-				stmt.executeUpdate("INSERT INTO TACHE (NOM, DESCRIPTION, STATUS, ID_MEMBRE) " + 
+				statement.executeUpdate("INSERT INTO TACHE (NOM, DESCRIPTION, STATUS, ID_MEMBRE) " + 
 						"VALUES ('" + tache.getNomTache()+"','"+ tache.getDesription() +"','" + status + "'," + id_Membre + ");");
-				System.out.println("\nTache enregistree\n");
+				System.out.println("\nTache creee et enregistree avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -105,9 +106,9 @@ public class DataBaseConnexion {
 		//Methode permettant de creer un membre
 		public void creerMembre(Membre membre) {		
 			try {
-				stmt.executeUpdate("INSERT INTO MEMBRE (NOM) " + 
+				statement.executeUpdate("INSERT INTO MEMBRE (NOM) " + 
 						"VALUES ('" + membre.getNomMembre()+"');");
-				System.out.println("\nMembre enregistre\n");
+				System.out.println("\nMembre cree et enregistre avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -115,15 +116,15 @@ public class DataBaseConnexion {
 
 		//Methode permettant d'afficher les taches assignees a un membre
 		public List<Tache> afficherTachesMembre(int identifiant) throws SQLException {
-			rs = stmt.executeQuery("SELECT * FROM TACHE WHERE ID_MEMBRE = " + identifiant + ";");
+			result = statement.executeQuery("SELECT * FROM TACHE WHERE ID_MEMBRE = " + identifiant + ";");
 			List<Tache> listeTachesmembre = new ArrayList<Tache>();
 
-			while (rs.next()) {
-				int id = rs.getInt("ID");
-				String name = rs.getString("NOM");
-				String description = rs.getString("DESCRIPTION");
-				String status = rs.getString("STATUS");
-				int idMembre = rs.getInt("ID_MEMBRE");
+			while (result.next()) {
+				int id = result.getInt("ID");
+				String name = result.getString("NOM");
+				String description = result.getString("DESCRIPTION");
+				String status = result.getString("STATUS");
+				int idMembre = result.getInt("ID_MEMBRE");
 				listeTachesmembre.add(new Tache(id, name, description, status, idMembre));
 			}
 			return listeTachesmembre;
@@ -144,20 +145,20 @@ public class DataBaseConnexion {
 			} else {
 				stringStatus = "termine";
 			}
-			rs = stmt.executeQuery("SELECT T.ID AS tacheID, T.NOM AS tacheNOM, T.DESCRIPTION AS tacheDESCRIPTION,"
+			result = statement.executeQuery("SELECT T.ID AS tacheID, T.NOM AS tacheNOM, T.DESCRIPTION AS tacheDESCRIPTION,"
 					+ "T.STATUS AS tacheSTATUS, M.ID AS membreID, M.NOM AS membreNOM  FROM TACHE AS T "
 					+ "LEFT JOIN MEMBRE AS M  ON T.ID_MEMBRE=M.ID WHERE T.STATUS = '"+stringStatus+"';");
 
-			while (rs.next()) {
+			while (result.next()) {
 				//Creation objet tache
-				int id = rs.getInt("tacheID");
-				String name = rs.getString("tacheNOM");
-				String description = rs.getString("tacheDESCRIPTION");
-				String status = rs.getString("tacheSTATUS");
+				int id = result.getInt("tacheID");
+				String name = result.getString("tacheNOM");
+				String description = result.getString("tacheDESCRIPTION");
+				String status = result.getString("tacheSTATUS");
 
 				//Creation objet membre
-				int idMembre = rs.getInt("membreID");
-				String nomMembre=rs.getString("membreNOM");
+				int idMembre = result.getInt("membreID");
+				String nomMembre=result.getString("membreNOM");
 
 				temporaire[0]=new Tache(id, name, description, status, idMembre);
 				temporaire[1]=new Membre(idMembre,nomMembre);
@@ -168,11 +169,11 @@ public class DataBaseConnexion {
 
 		// Methode permettant de recuperer et d'afficher tous les membres
 		public List<Membre> afficherMembres() throws SQLException {
-			rs = stmt.executeQuery("SELECT * FROM MEMBRE;");
+			result = statement.executeQuery("SELECT * FROM MEMBRE;");
 			List<Membre> listeMembres = new ArrayList<Membre>();
-			while (rs.next()) {
-				int id = rs.getInt("ID");
-				String name = rs.getString("NOM");
+			while (result.next()) {
+				int id = result.getInt("ID");
+				String name = result.getString("NOM");
 				listeMembres.add(new Membre(id, name));
 			}
 			return listeMembres;
@@ -180,15 +181,15 @@ public class DataBaseConnexion {
 
 		// Methode permettant de recuperer et d'afficher toutes les taches
 		public List<Tache> afficherTaches() throws SQLException {
-			rs = stmt.executeQuery("SELECT * FROM TACHE;");
+			result = statement.executeQuery("SELECT * FROM TACHE;");
 			List<Tache> listeTaches = new ArrayList<Tache>();
 
-			while (rs.next()) {
-				int id = rs.getInt("ID");
-				String name = rs.getString("NOM");
-				String description = rs.getString("DESCRIPTION");
-				String status = rs.getString("STATUS");
-				int idMembre = rs.getInt("ID_MEMBRE");
+			while (result.next()) {
+				int id = result.getInt("ID");
+				String name = result.getString("NOM");
+				String description = result.getString("DESCRIPTION");
+				String status = result.getString("STATUS");
+				int idMembre = result.getInt("ID_MEMBRE");
 				listeTaches.add(new Tache(id, name, description, status, idMembre));
 			}
 			return listeTaches;
@@ -197,11 +198,11 @@ public class DataBaseConnexion {
 		//Modifications
 		public void modifierTache(Tache tache) {			
 			try {
-				stmt.executeUpdate("UPDATE TACHE SET NOM='"+tache.getNomTache()+"',DESCRIPTION='"+tache.getDesription()+
+				statement.executeUpdate("UPDATE TACHE SET NOM='"+tache.getNomTache()+"',DESCRIPTION='"+tache.getDesription()+
 						"',STATUS='"+tache.getStatut()+"',ID_MEMBRE='"+tache.getId_Membre()+
 						"' WHERE ID='"+tache.getId_Tache()+"';"); 
 
-				System.out.println("\nTache modifie\n");
+				System.out.println("\nMise a jour de tache a ete bien faite et enregistree avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -209,10 +210,10 @@ public class DataBaseConnexion {
 
 		public void modifierMembre(Membre membre) {					
 			try {
-				stmt.executeUpdate("UPDATE MEMBRE SET NOM='"+membre.getNomMembre()+
+				statement.executeUpdate("UPDATE MEMBRE SET NOM='"+membre.getNomMembre()+
 						"' WHERE ID='"+membre.getId_Membre()+"';"); 
 
-				System.out.println("\nMembre modifie\n");
+				System.out.println("\nMise a jour du membre a ete bien faite et enregistree avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -221,10 +222,10 @@ public class DataBaseConnexion {
 		//Methode d'assignation de tache
 		public void assignerTacheAUnMembre(int idTache, int idMembre){	
 			try {
-				stmt.executeUpdate("UPDATE TACHE SET ID_MEMBRE='"+idMembre
+				statement.executeUpdate("UPDATE TACHE SET ID_MEMBRE='"+idMembre
 						+"'WHERE ID='"+idTache+"';"); 
 
-				System.out.println("\nTache assignee\n");
+				System.out.println("\nTache assignee et enregistree avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -234,8 +235,8 @@ public class DataBaseConnexion {
 		public void supprimerTache(int idTache) {
 			String sql = "DELETE FROM TACHE WHERE ID="+ idTache + ";";
 			try {
-				stmt.executeUpdate(sql);
-				System.out.println("\nTache supprimee\n");
+				statement.executeUpdate(sql);
+				System.out.println("\nTache supprimee avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -245,10 +246,10 @@ public class DataBaseConnexion {
 		public void supprimerMembre(int idMembre) {
 			String sql = "DELETE FROM MEMBRE WHERE ID="+ idMembre + ";";
 			try {
-				stmt.executeUpdate(sql);
+				statement.executeUpdate(sql);
 				sql="UPDATE TACHE SET ID_MEMBRE = NULL WHERE ID_MEMBRE=0;";
-				stmt.executeUpdate(sql);
-				System.out.println("\nMembre supprime\n");
+				statement.executeUpdate(sql);
+				System.out.println("\nMembre supprime avec succes\n");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -258,8 +259,8 @@ public class DataBaseConnexion {
 		// Methode permettant de fermer et liberer les ressources
 		public void fermerRessourceBaseDeDonnees() {
 			try {
-				stmt.close();
-				c.close();
+				statement.close();
+				connection.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.out.println("Erreur de fermeture des ressources de la base de donnees\n\n");

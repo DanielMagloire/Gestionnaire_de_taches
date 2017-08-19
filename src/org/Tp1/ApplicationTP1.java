@@ -359,12 +359,12 @@ public class ApplicationTP1 {
 		}		
 	}
 	
-	private static List<Membre> rechercherMembres() throws SQLException{
+	public static List<Membre> rechercherMembres() throws SQLException{
 		List<Membre> liste=baseDeDonnees.afficherMembres();
 		return  liste;
 	}
 		
-	private static List<Tache> rechercherTaches() throws SQLException{
+	public static List<Tache> rechercherTaches() throws SQLException{
 		List<Tache> liste=baseDeDonnees.afficherTaches();
 		return liste;
 	}
